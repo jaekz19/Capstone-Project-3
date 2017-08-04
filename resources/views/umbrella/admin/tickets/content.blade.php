@@ -19,10 +19,17 @@ T-virus Admin
 				<p>{{ $contents->content }}</p>
 			</div>
 			<div class="panel-footer">
-				<h4>Conversation:</h4>
-				<form>
-					<input type="text" name="content" placeholder="Add Comment..." class="form-control">
+				<form method="POST" action="/addcomment/{{ $contents->id }}">
+					{{csrf_field()}}
+					<input type="text" name="comment" placeholder="Add Comment..." class="form-control">
 				</form>
+				<h4>Conversation:</h4>
+				<div class="row">
+					@foreach($comments as $comment)
+					<p class="col-xs-3">{{ $comment->commentor->name }}</p>
+					<p class="col-xs-9">{{ $comment->comment }}</p>
+					@endforeach
+				</div>
 			</div>
 		</div>
 	</div>

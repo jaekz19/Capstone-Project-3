@@ -32,7 +32,6 @@ T-virus Admin
 			role: $('#role').val()
 		},
 		function(data){
-			console.log(data);
 			$('#nextselect').html(data);
 		});
 	});

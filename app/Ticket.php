@@ -21,4 +21,8 @@ class Ticket extends Model
     function tmod() {
     	return $this->belongsTo('App\Sub', 'tsub_id');
     }
+
+    function comment() {
+    	return $this->hasMany('App\Comment','ticket_id');
+    }
 }

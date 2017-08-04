@@ -36,7 +36,7 @@ T-virus Admin
 
 @section("scripts")
 	$('#module').change(function(){
-		$.get('/select/sub',
+		$.get('/select/submod',
 		{
 			id: $('#module').val()
 		},

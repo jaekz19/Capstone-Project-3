@@ -14,7 +14,7 @@ T-virus Admin
 			<thead>
 				<tr>
 					<th>Ticket Number</th>
-					<th>Ticket Name</th>
+					<th>Ticket Title</th>
 					<th>Ticket Module</th>
 					<th>Created By</th>
 					<th>Supported By</th>

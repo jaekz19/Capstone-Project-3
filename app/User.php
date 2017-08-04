@@ -47,4 +47,8 @@ class User extends Authenticatable
     function sticket() {
         return $this->hasMany('App\Ticket', 'supp_id');
     }
+
+    function commented() {
+        return $this->hasMany('App/Comment','commentor_id');
+    }
 }

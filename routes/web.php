@@ -26,18 +26,32 @@ Route::get('/', function () {
 		return view('umbrella/waiting');
 	})->middleware('new');
 
-// Common Routes and Functions
+// All Users including Admin Routes and Functions (home page, add comment, and edit profile)
 	Route::group(['middleware' => 'all'], function(){
+
+		// Home Page
 		Route::get('/dashboard', function(){
 			return view('umbrella/home');
+		});
+
+		// Add Comment
+		Route::post('/addcomment/{id}', function (request $request, $id){
+			$comment = new Comment();
+			$comment->ticket_id = $id;
+			$comment->commentor_id = Auth::user()->id;
+			$comment->comment = $request->comment;
+			$comment->save();
+
+			return back();
 		});
 
 		// Edit profile here
 	});
 
-// Admin Routes and Functions
+// Admin Routes and Functions (all controls except create ticket)
 	Route::group(['middleware' => 'admin'], function(){
-		// Activation
+
+	// Activation
 		Route::get('/activate', function() {
 			$registers = Ustatus::find(2)->user;
 			
@@ -56,6 +70,7 @@ Route::get('/', function () {
 				$depts = Department::all();
 
 				return view('umbrella/admin/activate/departmentselect',compact('depts'));
+
 			}elseif($request->role == 'Support'){
 				$modules = Module::all();
 
@@ -89,7 +104,7 @@ Route::get('/', function () {
 		});
 
 
-		// Database
+	// Database
 		Route::get('/database', function(){
 			$modules = Module::all();
 			$depts = Department::all();
@@ -97,7 +112,7 @@ Route::get('/', function () {
 		});
 
 
-		// Employees
+	// Employees
 		Route::get('/employees', function() {
 			$emps = Department::with('employs')->get();
 
@@ -105,7 +120,7 @@ Route::get('/', function () {
 		});
 
 
-		// Supports
+	// Supports
 		Route::get('/supports', function(){
 			$subs = Sub::with('supps')->get();
 
@@ -113,7 +128,7 @@ Route::get('/', function () {
 		});
 
 
-		// Tickets
+	// Tickets
 		Route::get('/tickets', function(){
 			$tickets = Ticket::all();
 			$stats = Tstatus::all();
@@ -123,13 +138,15 @@ Route::get('/', function () {
 
 		Route::get('/tickets/{id}', function($id){
 			$contents = Ticket::find($id);
+			$comments = $contents->comment()->latest()->get();
 
-			return view('umbrella/admin/tickets/content',compact('contents'));
+			return view('umbrella/admin/tickets/content',compact('contents','comments'));
 		});
 	});
 
-// Users Routes and Functions
+// Users Routes and Functions (add ticket)
 	Route::group(['middleware' => 'users'], function(){
+
 		Route::get('/mytickets', function(){
 			return view('umbrella/users/mytickets');
 		});
@@ -138,6 +155,12 @@ Route::get('/', function () {
 			$modules = Module::all();
 
 			return view('umbrella/createticket',compact('modules'));
+		});
+
+		Route::get('/select/submod', function(request $request){
+			$submods = Module::find($request->id)->submodule;
+
+			return view('umbrella/admin/activate/subselect',compact('submods'));
 		});
 
 		// Route::post('/ticket/save', function(request $request){
