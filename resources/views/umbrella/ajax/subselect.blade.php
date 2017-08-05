@@ -8,6 +8,12 @@
 
 <script type="text/javascript">
 	$('#submodule').change(function(){
-		$('#savebtn').show();
+		$.get('/select/support',
+		{
+			id: $('#submodule').val()
+		},
+		function(data){
+			$('#support').html(data);
+		});
 	});
 </script>

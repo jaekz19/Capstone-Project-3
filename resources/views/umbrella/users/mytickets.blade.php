@@ -23,8 +23,8 @@ T-virus Admin
 					</tr>
 				</thead>
 				<tbody>
-					@foreach(Auth::user()->ticket as $ticket)
-					<tr style="cursor: pointer">
+					@foreach(Auth::user()->ticket()->latest()->get() as $ticket)
+					<tr data-href='{{ url("/mytickets/{$ticket->id}") }}' style="cursor: pointer" class="perticket">
 						<td>{{ $ticket->tnum }}</td>
 						<td>{{ $ticket->tname }}</td>
 						<td>{{ $ticket->tmod->submodules }} / {{$ticket->tmod->module->modules}}</td>
@@ -50,8 +50,8 @@ T-virus Admin
 					</tr>
 				</thead>
 				<tbody>
-					@foreach(Auth::user()->sticket as $ticket)
-					<tr style="cursor: pointer">
+					@foreach(Auth::user()->sticket()->latest()->get() as $ticket)
+					<tr data-href='{{ url("/mytickets/{$ticket->id}") }}' style="cursor: pointer" class="perticket">
 						<td>{{ $ticket->tnum }}</td>
 						<td>{{ $ticket->tname }}</td>
 						<td>{{ $ticket->creator->name }}</td>
@@ -69,5 +69,7 @@ T-virus Admin
 @endsection
 
 @section("scripts")
-
+	$('.perticket').click(function(){
+		window.location = $(this).data("href");
+	});
 @endsection

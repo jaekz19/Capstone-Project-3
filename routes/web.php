@@ -26,7 +26,7 @@ Route::get('/', function () {
 		return view('umbrella/waiting');
 	})->middleware('new');
 
-// All Users including Admin Routes and Functions (home page, add comment, and edit profile)
+// Common Routes and Functions (home page, add comment, and edit profile)
 	Route::group(['middleware' => 'all'], function(){
 
 		// Home Page
@@ -69,19 +69,19 @@ Route::get('/', function () {
 			if($request->role == 'Employee'){
 				$depts = Department::all();
 
-				return view('umbrella/admin/activate/departmentselect',compact('depts'));
+				return view('umbrella/ajax/departmentselect',compact('depts'));
 
 			}elseif($request->role == 'Support'){
 				$modules = Module::all();
 
-				return view('umbrella/admin/activate/moduleselect',compact('modules'));
+				return view('umbrella/ajax/moduleselect',compact('modules'));
 			}
 		});
 
 		Route::get('/select/sub', function(request $request){
 			$submods = Sub::all()->where('module_id',$request->id);
 
-			return view('umbrella/admin/activate/subselect',compact('submods'));
+			return view('umbrella/ajax/subselect',compact('submods'));
 		});
 
 		Route::post('/activate/save{id}', function(request $request, $id){
@@ -151,27 +151,52 @@ Route::get('/', function () {
 			return view('umbrella/users/mytickets');
 		});
 
+		Route::get('/mytickets/{id}', function($id){
+			$contents = Ticket::find($id);
+			$comments = $contents->comment()->latest()->get();
+			$stats = Tstatus::all();
+
+			return view('umbrella/users/mycontent',compact('contents','comments','stats'));
+		});
+
 		Route::get('/ticket/create', function(){
 			$modules = Module::all();
 
-			return view('umbrella/createticket',compact('modules'));
+			return view('umbrella/users/createticket',compact('modules'));
 		});
 
 		Route::get('/select/submod', function(request $request){
 			$submods = Module::find($request->id)->submodule;
 
-			return view('umbrella/admin/activate/subselect',compact('submods'));
+			return view('umbrella/ajax/subselect',compact('submods'));
 		});
 
-		// Route::post('/ticket/save', function(request $request){
-		// 	$ticket = new Ticket();
-		// 	$ticket->tnum = count(Ticket::all())+1;
-		// 	$ticket->tname = $request->tname;
-		// 	$ticket->creator_id = Auth::user()->id;
-		// 	$ticket->tmod_id = $request->module;
-		// 	$ticket->tsub_id = $request->submodule;
-		// 	$ticket->supp_id = rand(Sub::with('supps'));
-		// 	$ticket->content = $ticket->content;
-		// 	$ticket->tstatus_id = 1;
-		// });
+		Route::get('/select/support', function(request $request){
+			$supps = Sub::find($request->id)->supps;
+
+			return view('umbrella/ajax/supportselect',compact('supps'));
+		});
+
+		Route::post('/ticket/save', function(request $request){
+			$ticket = new Ticket();
+			$ticket->tnum = count(App\Ticket::all())+1;
+			$ticket->tname = $request->tname;
+			$ticket->creator_id = Auth::user()->id;
+			$ticket->tmod_id = $request->module;
+			$ticket->tsub_id = $request->submodule;
+			$ticket->supp_id = $request->supp;
+			$ticket->content = $request->content;
+			$ticket->tstatus_id = 1;
+			$ticket->save();
+
+			return redirect('/mytickets');
+		});
+
+		Route::post('/mytickets/status/{id}', function(request $request, $id){
+			$ticket = Ticket::find($id);
+			$ticket->tstatus_id = $request->ticketstatus;
+			$ticket->save();
+
+			return back();
+		});
 	});

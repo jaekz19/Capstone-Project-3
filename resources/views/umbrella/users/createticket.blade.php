@@ -24,6 +24,7 @@ T-virus Admin
 			</select>
 		</div>
 		<div class="form-group" id="sub"></div>
+		<div class="form-group" id="support"></div>
 		<div class="form-group">
 			<label>Content: </label>
 			<textarea class="form-control" name="content" id="content"></textarea>
